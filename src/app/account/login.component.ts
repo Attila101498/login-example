@@ -5,7 +5,9 @@ import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '@app/_services';
 
-@Component({ templateUrl: 'login.component.html' })
+@Component({ 
+    templateUrl: 'login.component.html' 
+})
 export class LoginComponent implements OnInit {
     form: FormGroup;
     loading = false;
@@ -26,16 +28,16 @@ export class LoginComponent implements OnInit {
         });
     }
 
-    // convenience getter for easy access to form fields
+    // kényelmi getter az űrlapmezők egyszerű eléréséhez
     get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        // reset alerts on submit
+        // alertek visszaállítása submit eseménynél
         this.alertService.clear();
 
-        // stop here if form is invalid
+        // stop, ha a form invalid!
         if (this.form.invalid) {
             return;
         }
@@ -45,7 +47,8 @@ export class LoginComponent implements OnInit {
             .pipe(first())
             .subscribe({
                 next: () => {
-                    // get return url from query parameters or default to home page
+                    // visszaküldési URL-t kapunk a lekérdezési paraméterekből 
+                    // vagy alapértelmezettként a kezdőlapra írányítunk
                     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
                     this.router.navigateByUrl(returnUrl);
                 },

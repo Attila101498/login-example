@@ -7,7 +7,9 @@ import { map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { User } from '@app/_models';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ 
+    providedIn: 'root' 
+})
 export class AccountService {
     private userSubject: BehaviorSubject<User>;
     public user: Observable<User>;
@@ -27,7 +29,8 @@ export class AccountService {
     login(username, password) {
         return this.http.post<User>(`${environment.apiUrl}/users/authenticate`, { username, password })
             .pipe(map(user => {
-                // store user details and jwt token in local storage to keep user logged in between page refreshes
+                // a felhasználói adatokat és a jwt tokent a local storage-ban tároljuk, 
+                // hogy a felhasználó bejelentkezve maradjon az oldalfrissítések között
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);
                 return user;
@@ -35,7 +38,9 @@ export class AccountService {
     }
 
     logout() {
-        // remove user from local storage and set current user to null
+        // felhasználó eltávolítása a local storage-ból, majd a 
+        // jelenlegi felhasználót null-ra állítjuk, azután a 
+        // bejelelentkezési oldalra továbbítjuk
         localStorage.removeItem('user');
         this.userSubject.next(null);
         this.router.navigate(['/account/login']);
@@ -56,13 +61,14 @@ export class AccountService {
     update(id, params) {
         return this.http.put(`${environment.apiUrl}/users/${id}`, params)
             .pipe(map(x => {
-                // update stored user if the logged in user updated their own record
+                // tárolt felhasználó frissítése, ha a bejelentkezett 
+                // felhasználó a saját adatait frissítette
                 if (id == this.userValue.id) {
-                    // update local storage
+                    // local storage frissítése
                     const user = { ...this.userValue, ...params };
                     localStorage.setItem('user', JSON.stringify(user));
 
-                    // publish updated user to subscribers
+                    // frissített felhasználó közzététele a feliratkozók számára
                     this.userSubject.next(user);
                 }
                 return x;
@@ -72,7 +78,8 @@ export class AccountService {
     delete(id: string) {
         return this.http.delete(`${environment.apiUrl}/users/${id}`)
             .pipe(map(x => {
-                // auto logout if the logged in user deleted their own record
+                // automatikus kijelentkezés, ha a bejelentkezett 
+                // felhasználó a saját adatait törölte
                 if (id == this.userValue.id) {
                     this.logout();
                 }

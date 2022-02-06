@@ -3,7 +3,9 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 
 import { AccountService } from '@app/_services';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ 
+    providedIn: 'root' 
+})
 export class AuthGuard implements CanActivate {
     constructor(
         private router: Router,
@@ -13,11 +15,12 @@ export class AuthGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         const user = this.accountService.userValue;
         if (user) {
-            // authorised so return true
+            // be van jelentkezve
             return true;
         }
 
-        // not logged in so redirect to login page with the return url
+        // nincs bejelentkezve, ezért átirányítjuk a bejelentkezési 
+        // oldalra a visszatérési URL-lel
         this.router.navigate(['/account/login'], { queryParams: { returnUrl: state.url }});
         return false;
     }

@@ -3,8 +3,8 @@ import { HttpRequest, HttpResponse, HttpHandler, HttpEvent, HttpInterceptor, HTT
 import { Observable, of, throwError } from 'rxjs';
 import { delay, materialize, dematerialize } from 'rxjs/operators';
 
-// array in local storage for registered users
-const usersKey = 'angular-10-registration-login-example-users';
+// tömb a local storage-ben a regisztrált felhasználók számára
+const usersKey = 'users';
 let users = JSON.parse(localStorage.getItem(usersKey)) || [];
 
 @Injectable()
@@ -29,12 +29,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                 case url.match(/\/users\/\d+$/) && method === 'DELETE':
                     return deleteUser();
                 default:
-                    // pass through any requests not handled above
+                    // a fent nem kezelt kérések továbbítása
                     return next.handle(request);
             }    
         }
-
-        // route functions
 
         function authenticate() {
             const { username, password } = body;
@@ -43,7 +41,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             return ok({
                 ...basicDetails(user),
                 token: 'fake-jwt-token'
-            })
+            });
         }
 
         function register() {
@@ -77,12 +75,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             let params = body;
             let user = users.find(x => x.id === idFromUrl());
 
-            // only update password if entered
+            // Csak akkor módisítjuk a jelszót, ha van benne érték
             if (!params.password) {
                 delete params.password;
             }
 
-            // update and save user
+            // user módosítása, majd mentése
             Object.assign(user, params);
             localStorage.setItem(usersKey, JSON.stringify(users));
 
@@ -97,16 +95,16 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             return ok();
         }
 
-        // helper functions
-
         function ok(body?) {
             return of(new HttpResponse({ status: 200, body }))
-                .pipe(delay(500)); // delay observable to simulate server api call
+                .pipe(delay(500)); 
+                // késleltetjük az Observable-t  a szerver API-hívás szimulálásához
         }
 
         function error(message) {
             return throwError({ error: { message } })
-                .pipe(materialize(), delay(500), dematerialize()); // call materialize and dematerialize to ensure delay even if an error is thrown (https://github.com/Reactive-Extensions/RxJS/issues/648);
+                .pipe(materialize(), delay(500), dematerialize()); 
+                // hívjuk meg a materialize és dematerialize function-t, hogy hiba esetén is biztosítsuk a késést
         }
 
         function unauthorized() {
@@ -131,7 +129,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 }
 
 export const fakeBackendProvider = {
-    // use fake backend in place of Http service for backend-less development
+    // Hamis backend-et használunk a Http szolgáltatás 
+    // helyett a backend-less development biztosítására
     provide: HTTP_INTERCEPTORS,
     useClass: FakeBackendInterceptor,
     multi: true

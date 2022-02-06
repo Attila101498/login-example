@@ -5,7 +5,9 @@ import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '@app/_services';
 
-@Component({ templateUrl: 'register.component.html' })
+@Component({
+    templateUrl: 'register.component.html' 
+})
 export class RegisterComponent implements OnInit {
     form: FormGroup;
     loading = false;
@@ -28,16 +30,16 @@ export class RegisterComponent implements OnInit {
         });
     }
 
-    // convenience getter for easy access to form fields
+    // kényelmi getter az űrlapmezők egyszerű eléréséhez
     get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        // reset alerts on submit
+        // alertek visszaállítása submit eseménynél
         this.alertService.clear();
 
-        // stop here if form is invalid
+        // stop, ha a form invalid!
         if (this.form.invalid) {
             return;
         }
@@ -47,6 +49,8 @@ export class RegisterComponent implements OnInit {
             .pipe(first())
             .subscribe({
                 next: () => {
+                    // Egy üzenettel jelzünk vissza, ami az útváltás során 
+                    // is megmarad, valamint a login oldalra irányítjuk a felhasználót
                     this.alertService.success('Registration successful', { keepAfterRouteChange: true });
                     this.router.navigate(['../login'], { relativeTo: this.route });
                 },

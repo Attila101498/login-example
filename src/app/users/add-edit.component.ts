@@ -5,7 +5,9 @@ import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '@app/_services';
 
-@Component({ templateUrl: 'add-edit.component.html' })
+@Component({ 
+    templateUrl: 'add-edit.component.html' 
+})
 export class AddEditComponent implements OnInit {
     form: FormGroup;
     id: string;
@@ -25,7 +27,7 @@ export class AddEditComponent implements OnInit {
         this.id = this.route.snapshot.params['id'];
         this.isAddMode = !this.id;
         
-        // password not required in edit mode
+        // password nem kötelező az editáláskor
         const passwordValidators = [Validators.minLength(6)];
         if (this.isAddMode) {
             passwordValidators.push(Validators.required);
@@ -45,16 +47,16 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    // convenience getter for easy access to form fields
+    // kényelmi getter az űrlapmezők egyszerű eléréséhez
     get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        // reset alerts on submit
+        // alertek visszaállítása submit eseménynél
         this.alertService.clear();
 
-        // stop here if form is invalid
+        // stop, ha a form invalid!
         if (this.form.invalid) {
             return;
         }

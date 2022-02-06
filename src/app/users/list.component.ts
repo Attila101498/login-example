@@ -3,7 +3,9 @@ import { first } from 'rxjs/operators';
 
 import { AccountService } from '@app/_services';
 
-@Component({ templateUrl: 'list.component.html' })
+@Component({ 
+    templateUrl: 'list.component.html' 
+})
 export class ListComponent implements OnInit {
     users = null;
 
@@ -18,8 +20,10 @@ export class ListComponent implements OnInit {
     deleteUser(id: string) {
         const user = this.users.find(x => x.id === id);
         user.isDeleting = true;
-        this.accountService.delete(id)
+        confirm("Are you sure, you want to delete this user?") 
+        ? this.accountService.delete(id)
             .pipe(first())
-            .subscribe(() => this.users = this.users.filter(x => x.id !== id));
+            .subscribe(() => this.users = this.users.filter(x => x.id !== id))
+        : "";
     }
 }

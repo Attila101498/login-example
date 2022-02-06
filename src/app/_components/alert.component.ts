@@ -5,7 +5,10 @@ import { Subscription } from 'rxjs';
 import { Alert, AlertType } from '@app/_models';
 import { AlertService } from '@app/_services';
 
-@Component({ selector: 'alert', templateUrl: 'alert.component.html' })
+@Component({ 
+    selector: 'alert', 
+    templateUrl: 'alert.component.html' 
+})
 export class AlertComponent implements OnInit, OnDestroy {
     @Input() id = 'default-alert';
     @Input() fade = true;
@@ -14,32 +17,33 @@ export class AlertComponent implements OnInit, OnDestroy {
     alertSubscription: Subscription;
     routeSubscription: Subscription;
 
-    constructor(private router: Router, private alertService: AlertService) { }
+    constructor(private router: Router, 
+                private alertService: AlertService) { }
 
     ngOnInit() {
-        // subscribe to new alert notifications
+        // feliratkozás az új alert értesítésekre
         this.alertSubscription = this.alertService.onAlert(this.id)
             .subscribe(alert => {
-                // clear alerts when an empty alert is received
+                // alertek törlése, ha üres alert érkezik
                 if (!alert.message) {
-                    // filter out alerts without 'keepAfterRouteChange' flag
+                    // alertek kiszűrése a „keepAfterRouteChange” jelző nélkül
                     this.alerts = this.alerts.filter(x => x.keepAfterRouteChange);
 
-                    // remove 'keepAfterRouteChange' flag on the rest
+                    // A többiről eltávolítjuk el a „keepAfterRouteChange” jelzőt
                     this.alerts.forEach(x => delete x.keepAfterRouteChange);
                     return;
                 }
 
-                // add alert to array
+                // alert hozzáadása a tömbhöz
                 this.alerts.push(alert);
 
-                // auto close alert if required
+                // szükség esetén automatikusan bezárjuk az alertet
                 if (alert.autoClose) {
                     setTimeout(() => this.removeAlert(alert), 3000);
                 }
            });
 
-        // clear alerts on location change
+        // helyváltozásnál ürítsük ki az alerteket
         this.routeSubscription = this.router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
                 this.alertService.clear(this.id);
@@ -48,25 +52,26 @@ export class AlertComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        // unsubscribe to avoid memory leaks
+        // iratkozzunk le a memóriatúlcsordulás elkerülése érdekében
         this.alertSubscription.unsubscribe();
         this.routeSubscription.unsubscribe();
     }
 
     removeAlert(alert: Alert) {
-        // check if already removed to prevent error on auto close
+        // ellenőrizzük, hogy már eltávolították-e, hogy elkerüljük az 
+        // automatikus bezáráskor jelentkező hibákat
         if (!this.alerts.includes(alert)) return;
 
         if (this.fade) {
             // fade out alert
             alert.fade = true;
 
-            // remove alert after faded out
+            // alert eltávolítása a fade out után
             setTimeout(() => {
                 this.alerts = this.alerts.filter(x => x !== alert);
             }, 250);
         } else {
-            // remove alert
+            // alert eltávolítása
             this.alerts = this.alerts.filter(x => x !== alert);
         }
     }
