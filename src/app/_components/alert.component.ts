@@ -21,7 +21,7 @@ export class AlertComponent implements OnInit, OnDestroy {
                 private alertService: AlertService) { }
 
     ngOnInit() {
-        // feliratkozás az új alert értesítésekre
+        // feliratkozás az új alertre
         this.alertSubscription = this.alertService.onAlert(this.id)
             .subscribe(alert => {
                 // alertek törlése, ha üres alert érkezik
